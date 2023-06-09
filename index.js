@@ -28,7 +28,13 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     const userCollection = client.db('sportsCamp').collection('users');
-
+    const instructorsCollection = client.db('sportsCamp').collection('instructor');
+    app.get('/popularinstructors', async(req,res)=>{
+      let query = {category:"popular"}
+      const result = await instructorsCollection.find(query).limit(6).toArray();
+        res.send(result);
+      
+    })
     app.get('/users', async(req,res)=>{
       const result = await userCollection.find().toArray();
       res.send(result);
