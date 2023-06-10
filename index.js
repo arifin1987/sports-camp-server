@@ -29,11 +29,32 @@ async function run() {
     await client.connect();
     const userCollection = client.db('sportsCamp').collection('users');
     const instructorsCollection = client.db('sportsCamp').collection('instructor');
+    const classCollection = client.db('sportsCamp').collection('class');
+    const cartsCollection = client.db('sportsCamp').collection('carts');
+
+    app.get('/instructors', async(req,res)=>{
+      const result= await instructorsCollection.find().toArray();
+      res.send(result);
+    })
+    
     app.get('/popularinstructors', async(req,res)=>{
       let query = {category:"popular"}
       const result = await instructorsCollection.find(query).limit(6).toArray();
         res.send(result);
       
+    })
+
+    app.get('/classes', async(req,res)=>{
+      const result = await classCollection.find().toArray();
+      res.send(result);
+
+
+    })
+
+    app.get('/popularclasses', async(req,res)=>{
+      let query = {category:"popular"}
+      const result = await classCollection.find(query).limit(6).toArray();
+      res.send(result);
     })
     app.get('/users', async(req,res)=>{
       const result = await userCollection.find().toArray();
@@ -49,6 +70,25 @@ async function run() {
       }
       const result = await userCollection.insertOne(user);
       res.send(result)
+    })
+    //cart  collection
+    app.get('/carts', async(req,res)=>{
+      const email = req.query.email;
+      console.log(email);
+      if(!email){
+        res.send([])
+      }
+      const query = {email:email};
+      const result = await cartsCollection.find(query).toArray();
+      res.send(result);
+
+    })
+
+    app.post('/carts', async(req,res)=>{
+      const item = req.body;
+      console.log(item);
+      const result = await cartsCollection.insertOne(item);
+      res.send(result);
     })
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
